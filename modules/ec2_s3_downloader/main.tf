@@ -1,6 +1,16 @@
 # --- Data Sources remains the same ---
-data "aws_region" "current" {
+# data "aws_region" "current" {
 
+# }
+
+data "aws_ami" "amazon_linux" {
+  owners      = ["amazon"]
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-2023.*-x86_64"]
+  }
 }
 
 data "aws_vpc" "default" {
@@ -73,7 +83,7 @@ resource "aws_iam_instance_profile" "profile" {
 
 # --- 3. Compute: No key_name used ---
 resource "aws_instance" "this" {
-  ami                    = var.ami_id
+  ami                    = data.aws_ami.amazon_linux.id
   instance_type          = "t2.nano"
   subnet_id              = data.aws_subnets.default.ids[0]
   vpc_security_group_ids = [aws_security_group.ssm_only.id]
@@ -88,7 +98,7 @@ resource "aws_instance" "this" {
     #!/bin/bash
     yum install -y awscli
     mkdir -p /home/ec2-user/s3-downloads
-    aws s3 cp s3://pavan-2026-s3-demo/${var.object_key_to_download} /home/ec2-user/s3-downloads/
+    aws s3 cp s3://pavan-2026-s3-demo/sample.txt /home/ec2-user/s3-downloads/
     chown -R ec2-user:ec2-user /home/ec2-user/s3-downloads
   EOF
 

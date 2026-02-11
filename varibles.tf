@@ -1,8 +1,4 @@
-variable "ami_id" {
-  type = string
-}
-
-variable "object_key_to_download" {
+variable "aws_region" {
   type    = string
-  default = "sample.txt"
+  default = "us-east-1"
 }
